@@ -28,11 +28,14 @@ pub fn App(cx: Scope) -> Element {
         })
     });
     cx.render(rsx! {
-        GameStateHeader{board:board,game_state:game_state}
-        div { "{current_number.read()}" }
-        RandomButton{current_number:current_number, game_state:game_state}
-        div{"board"}
-        div{tiles}
+        div {
+            style { include_str!("../src/style.css")}
+            GameStateHeader{board:board,game_state:game_state}
+            div { "{current_number.read()}" }
+            RandomButton{current_number:current_number, game_state:game_state}
+            div{"board"}
+            div{tiles}
+        }
     })
 }
 
