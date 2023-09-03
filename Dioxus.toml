@@ -1,7 +1,7 @@
 [application]
 
 # dioxus project name
-name = "fingers and toes"
+name = "fingers-and-toes"
 
 # default platfrom
 # you can also use `dx serve/build --platform XXX` to use other platform

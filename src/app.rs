@@ -8,45 +8,42 @@ use rand::{
 
 const SIZE: usize = 3;
 
-fn invalid_board(board: [usize; SIZE]) -> bool {
-    for i in 1..(SIZE - 2) {
-        if board[i] != 0 && board[i - 1] != 0 && board[i] < board[i - 1] {
-            return true;
-        }
-    }
-    false
+#[derive(PartialEq)]
+enum GameState {
+    Progress,
+    Lost,
+    Won,
 }
 
 pub fn App(cx: Scope) -> Element {
     let current_number = use_ref(cx, || 0);
     let board = use_ref(cx, || [0; SIZE]);
-
-    let lost = invalid_board(*board.read());
-    if lost {
-        return cx.render(rsx! {
-            div { "lost" }
-        });
-    }
-
+    let game_state = use_ref(cx, || GameState::Progress);
     let tiles = (0..SIZE).map(|i| {
         rsx!(Tile {
             board: board,
             current_number: current_number,
+            game_state: game_state,
             index: i
         })
     });
     cx.render(rsx! {
+        GameStateHeader{board:board,game_state:game_state}
         div { "{current_number.read()}" }
-        RandomButton{current_number:current_number}
+        RandomButton{current_number:current_number, game_state:game_state}
         div{"board"}
         div{tiles}
     })
 }
 
 #[inline_props]
-pub fn RandomButton<'a>(cx: Scope, current_number: &'a UseRef<usize>) -> Element {
+fn RandomButton<'a>(
+    cx: Scope,
+    current_number: &'a UseRef<usize>,
+    game_state: &'a UseRef<GameState>,
+) -> Element {
     let mut rng = thread_rng();
-    if *current_number.read() != 0 {
+    if GameState::Progress != *game_state.read() || *current_number.read() != 0 {
         return None;
     }
     cx.render(rsx! {
@@ -54,20 +51,38 @@ pub fn RandomButton<'a>(cx: Scope, current_number: &'a UseRef<usize>) -> Element
     })
 }
 
+fn game_lost(board: [usize; SIZE], index: usize) -> bool {
+    if index != 0 && board[index - 1] != 0 && board[index - 1] >= board[index] {
+        return true;
+    };
+    if index != SIZE - 1 && board[index + 1] != 0 && board[index] >= board[index + 1] {
+        return true;
+    };
+    false
+}
+
+fn game_won(board: [usize; SIZE]) -> bool {
+    !board.iter().any(|x| *x == 0)
+}
+
 #[inline_props]
-pub fn Tile<'a>(
+fn Tile<'a>(
     cx: Scope,
     board: &'a UseRef<[usize; SIZE]>,
     current_number: &'a UseRef<usize>,
+    game_state: &'a UseRef<GameState>,
     index: usize,
 ) -> Element {
     if board.read()[*index] == 0 && *current_number.read() != 0 {
         cx.render(rsx! {
             div{"{board.read()[*index]}"}
             button{onclick: move |_| {
-                if *current_number.read() != 0 {
-                    board.write()[*index] = *current_number.read();
-                    current_number.set(0)
+                board.write()[*index] = *current_number.read();
+                current_number.set(0);
+                if game_lost(*board.read(),*index){
+                    game_state.set(GameState::Lost);
+                } else if game_won(*board.read()){
+                    game_state.set(GameState::Won)
                 }
             },"Set"}
         })
@@ -75,5 +90,24 @@ pub fn Tile<'a>(
         cx.render(rsx! {
             div{"{board.read()[*index]}"}
         })
+    }
+}
+
+#[inline_props]
+fn GameStateHeader<'a>(
+    cx: Scope,
+    board: &'a UseRef<[usize; SIZE]>,
+    game_state: &'a UseRef<GameState>,
+) -> Element {
+    match *game_state.read() {
+        GameState::Progress => None,
+        GameState::Won => cx.render(rsx! {
+            div {"Won! "}
+            button{ onclick: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},"Try again!"}
+        }),
+        GameState::Lost => cx.render(rsx! {
+            div {"Lost! "}
+            button{ onclick: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},"Try again!"}
+        }),
     }
 }
