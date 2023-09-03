@@ -9,8 +9,9 @@ name = "fingers-and-toes"
 default_platform = "web"
 
 # Web `build` & `serve` dist path
-out_dir = "dist"
+out_dir = "docs"
 
+base_path = "finger-and-toes"
 # resource (static) file folder
 asset_dir = "public"
 
