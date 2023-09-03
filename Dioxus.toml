@@ -9,10 +9,11 @@ name = "fingers-and-toes"
 default_platform = "web"
 
 # Web `build` & `serve` dist path
-out_dir = "docs"
+out_dir = "dist"
 
-base_path = "https://github.com/kloki/finger-and-toes"
-
+base_path = "finger-and-toes"
+# resource (static) file folder
+asset_dir = "public"
 
 [web.app]
 
@@ -40,3 +41,9 @@ script = []
 # Javascript code file
 # serve: [dev-server] only
 script = []
+
+[application.plugins]
+
+available = true
+
+required = []
