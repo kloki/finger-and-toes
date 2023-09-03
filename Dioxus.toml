@@ -11,7 +11,6 @@ default_platform = "web"
 # Web `build` & `serve` dist path
 out_dir = "dist"
 
-base_path = "finger-and-toes"
 # resource (static) file folder
 asset_dir = "public"
 
@@ -20,6 +19,7 @@ asset_dir = "public"
 # HTML title tag content
 
 title = "👐 'n 🦶"
+base_path = "finger-and-toes"
 
 [web.watcher]
 
