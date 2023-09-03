@@ -11,9 +11,8 @@ default_platform = "web"
 # Web `build` & `serve` dist path
 out_dir = "docs"
 
-base_path = "finger-and-toes"
-# resource (static) file folder
-asset_dir = "public"
+base_path = "https://github.com/kloki/finger-and-toes"
+
 
 [web.app]
 
@@ -41,36 +40,3 @@ script = []
 # Javascript code file
 # serve: [dev-server] only
 script = []
-
-[application.plugins]
-
-available = true
-
-required = []
-
-[bundler]
-# Bundle identifier
-identifier = "io.github.test"
-
-# Bundle publisher
-publisher = "test"
-
-# Bundle icon
-icon = ["icons/icon.png"]
-
-# Bundle resources
-resources = ["public/*"]
-
-# Bundle copyright
-copyright = ""
-
-# Bundle category
-category = "Utility"
-
-# Bundle short description
-short_description = "An amazing dioxus application."
-
-# Bundle long description
-long_description = """
-An amazing dioxus application.
-"""
