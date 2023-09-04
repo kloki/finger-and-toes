@@ -31,6 +31,7 @@ pub fn App(cx: Scope) -> Element {
         div {
             style { include_str!("../src/style.css")}
             header{ "👐 Fingers and Toes 🦶"}
+            Score{board:board, game_state:game_state}
             div{
                 class:"top",
                 RandomButton{
@@ -40,10 +41,36 @@ pub fn App(cx: Scope) -> Element {
                 },
                 div{class:"tiles", tiles}
             }
-            GameState{game_state:game_state, current_number:current_number}
+            div{class:"explanation", "You're goal is to fill to whole board with numbers. Press the spin button for a random number."}
+            div{class:"explanation", "You'll have to put the numbers in numerical order. So choose wisely!"}
+            div{class:"explanation", "Play alone or with friends."}
 
         }
     })
+}
+
+#[inline_props]
+fn Score<'a>(
+    cx: Scope,
+    board: &'a UseRef<[usize; SIZE]>,
+    game_state: &'a UseRef<GameState>,
+) -> Element {
+    let score = board
+        .read()
+        .iter()
+        .filter(|x| **x != 0)
+        .collect::<Vec<_>>()
+        .len();
+    let score_string = (0..score).map(|_| "🔪").collect::<String>();
+
+    let output = match (*game_state.read(), score) {
+        (GameState::Progress, n) if n == 0 => "Spin for a random number!",
+        (GameState::Progress, _) => &score_string,
+        (GameState::Won, _) => "You won!. 🍀 You're very lucky! 🍀 Try again!",
+        (GameState::Lost, _) => "You lost! Atleast you didn't loose ALL of your digits! Try again.",
+    };
+
+    cx.render(rsx! { div{ class:"score", "{output}"}})
 }
 
 #[inline_props]
@@ -123,24 +150,4 @@ fn Tile<'a>(
         },"{*index+1}"} }),
         (s, _) => cx.render(rsx! {button{class:"tile filled-1", disabled:true,"{s}"} }),
     }
-}
-
-#[inline_props]
-fn GameState<'a>(
-    cx: Scope,
-    game_state: &'a UseRef<GameState>,
-    current_number: &'a UseRef<usize>,
-) -> Element {
-    let text = match (*game_state.read(), *current_number.read()) {
-        (GameState::Progress, n) if n == 0 => "Spin for a random number!",
-        (GameState::Progress, _)  => "Pick a slot to place the number. You'll have to place all your numbers in order. So choose wisely",
-        (GameState::Won, _)  => "You won!. 🍀 You're very lucky! 🍀 Try again!",
-        (GameState::Lost, _)  => "You lost! Atleast you didn't loose all of your digits! 🔪 Try again.",
-    };
-
-    cx.render(rsx! {
-        div{class:"gamestate",
-        "{text}"
-        }
-    })
 }

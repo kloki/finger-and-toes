@@ -14,10 +14,12 @@ header {
   font-size: 6vw;
 }
 
-div.gamestate {
+div.score {
   background-color: #ebe4bc;
-  border-radius: 3px;
-  width: 100vw;
+  text-align: center;
+  font-size: 3vw;
+}
+div.explanation {
   font-size: 200%;
   text-align: center;
 }
