@@ -37,12 +37,11 @@ pub fn App(cx: Scope) -> Element {
                     current_number:current_number,
                     game_state:game_state,
                     onclick_reset: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},
-                }
-                GameState{game_state:game_state, current_number:current_number}
+                },
+                div{class:"tiles", tiles}
             }
+            GameState{game_state:game_state, current_number:current_number}
 
-            div{class:"tiles",
-                tiles}
         }
     })
 }
@@ -122,7 +121,7 @@ fn Tile<'a>(
                     game_state.set(GameState::Won)
             }
         },"{*index+1}"} }),
-        (s, _) => cx.render(rsx! {button{class:"tile_filled",disabled:true,"{s}"} }),
+        (s, _) => cx.render(rsx! {button{class:"tile filled-1", disabled:true,"{s}"} }),
     }
 }
 
@@ -134,7 +133,7 @@ fn GameState<'a>(
 ) -> Element {
     let text = match (*game_state.read(), *current_number.read()) {
         (GameState::Progress, n) if n == 0 => "Spin for a random number!",
-        (GameState::Progress, _)  => "Pick a slot to place the number. You'll have to place all your numbers in order. The number range is 1-1000. So choose wisely",
+        (GameState::Progress, _)  => "Pick a slot to place the number. You'll have to place all your numbers in order. So choose wisely",
         (GameState::Won, _)  => "You won!. 🍀 You're very lucky! 🍀 Try again!",
         (GameState::Lost, _)  => "You lost! Atleast you didn't loose all of your digits! 🔪 Try again.",
     };

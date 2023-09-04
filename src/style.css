@@ -3,60 +3,50 @@
   font-family: "Roboto Black", sans-serif;
 }
 body {
-  margin: 0;
-  padding: 0;
   background-color: #faf6dc;
   color: #3d264a;
-  font-size: 200%;
+  font-size: 100%;
 }
 
 header {
   background-color: #ebe4bc;
-  margin: 4px 2px;
   text-align: center;
-  font-size: 250%;
+  font-size: 6vw;
 }
 
 div.gamestate {
-  padding: 20px 0;
   background-color: #ebe4bc;
   border-radius: 3px;
-  width: 50vw;
-  margin: 4px 2px;
+  width: 100vw;
+  font-size: 200%;
   text-align: center;
 }
 div.top {
+  width: 100vw;
   display: flex;
 }
 
 div.tiles {
-  display: flex;
+  width: 50vw;
+  height: 50vw;
 }
 button {
-  background-color: #8ca9dc;
   border: none;
+  background-color: #ebe4bc;
   color: #faf6dc;
   text-align: center;
   text-decoration: none;
   font-size: 100%;
-  display: inline-block;
-  margin: 4px 2px;
+  background-color: #98b9ab;
   cursor: pointer;
-  border-radius: 3px;
 }
 
 button.tile {
   background-color: #ebe4bc;
-  color: #3d264a;
-  width: 5vw;
-  font-size: 80%;
-}
-
-button.tile_filled {
-  background-color: #98b9ab;
   color: #faf6dc;
-  width: 5vw;
-  font-size: 80%;
+  width: 12.5vw;
+  height: 10vw;
+  font-size: 6vw;
 }
 
 button:hover {
@@ -64,7 +54,7 @@ button:hover {
   color: #faf6dc;
 }
 button:disabled {
-  background-color: #8ca9dc;
+  background-color: #98b9ab;
   color: #faf6dc;
 }
 
@@ -73,5 +63,10 @@ button.tile:disabled {
 }
 button.randombutton {
   width: 50vw;
-  font-size: 15vw;
+  height: 50vw;
+  font-size: 12vw;
+}
+button.filled-1:disabled {
+  background-color: #8ca9dc;
+  color: #faf6dc;
 }
