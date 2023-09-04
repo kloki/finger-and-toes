@@ -33,7 +33,11 @@ pub fn App(cx: Scope) -> Element {
             header{ "👐 Fingers and Toes 🦶"}
             div{
                 class:"top",
-                RandomButton{current_number:current_number, game_state:game_state, board:board}
+                RandomButton{
+                    current_number:current_number,
+                    game_state:game_state,
+                    onclick_reset: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},
+                }
                 GameState{game_state:game_state, current_number:current_number}
             }
 
@@ -48,19 +52,19 @@ fn RandomButton<'a>(
     cx: Scope,
     current_number: &'a UseRef<usize>,
     game_state: &'a UseRef<GameState>,
-    board: &'a UseRef<[usize; SIZE]>,
+    onclick_reset: EventHandler<'a, MouseEvent>,
 ) -> Element {
     let mut rng = thread_rng();
     match (*game_state.read(), *current_number.read()) {
         (GameState::Won, _) => cx.render(rsx! {
         button{
             class:"randombutton",
-            onclick: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},
+            onclick: move |event| onclick_reset.call(event),
             " 👑 "}}),
         (GameState::Lost, _) => cx.render(rsx! {
         button{
             class:"randombutton",
-            onclick: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},
+            onclick: move |event| onclick_reset.call(event),
             " 🙊 "}}),
         (GameState::Progress, n) if n != 0 => cx.render(rsx! {
         button{
@@ -71,17 +75,24 @@ fn RandomButton<'a>(
         button{
             class:"randombutton",
             onclick: move |_| current_number.set(rng.gen_range(1..=1000)),
-            "🎰"}}),
+            "Spin!"}}),
     }
 }
 
 fn game_lost(board: [usize; SIZE], index: usize) -> bool {
-    if index != 0 && board[index - 1] != 0 && board[index - 1] >= board[index] {
-        return true;
-    };
-    if index != SIZE - 1 && board[index + 1] != 0 && board[index] >= board[index + 1] {
-        return true;
-    };
+    let current = &board[index];
+    let (left, right) = board.split_at(index);
+
+    for l in left.iter().rev() {
+        if l > current {
+            return true;
+        }
+    }
+    for r in right.iter() {
+        if r != &0 && r < current {
+            return true;
+        }
+    }
     false
 }
 
@@ -98,7 +109,7 @@ fn Tile<'a>(
     index: usize,
 ) -> Element {
     match (board.read()[*index], *current_number.read()) {
-        (0, 0) => cx.render(rsx! {button{class:"tile",disabled:true," ? "} }),
+        (0, 0) => cx.render(rsx! {button{class:"tile",disabled:true,"{*index+1}"} }),
         (0, _) => cx.render(rsx! {
         button{
             class:"tile",
@@ -110,7 +121,7 @@ fn Tile<'a>(
                 } else if game_won(*board.read()){
                     game_state.set(GameState::Won)
             }
-        },"?"} }),
+        },"{*index+1}"} }),
         (s, _) => cx.render(rsx! {button{class:"tile_filled",disabled:true,"{s}"} }),
     }
 }
@@ -122,10 +133,10 @@ fn GameState<'a>(
     current_number: &'a UseRef<usize>,
 ) -> Element {
     let text = match (*game_state.read(), *current_number.read()) {
-        (GameState::Progress, n) if n == 0 => "Spin the wheel for random number.",
-        (GameState::Progress, _)  => "Pick a slot to place the number. You'll have to place all your numbers in order. So choose wisely",
+        (GameState::Progress, n) if n == 0 => "Spin for a random number!",
+        (GameState::Progress, _)  => "Pick a slot to place the number. You'll have to place all your numbers in order. The number range is 1-1000. So choose wisely",
         (GameState::Won, _)  => "You won!. 🍀 You're very lucky! 🍀 Try again!",
-        (GameState::Lost, _)  => "You lost! Atleast you din't loose all of your digits! 🔪 Try again.",
+        (GameState::Lost, _)  => "You lost! Atleast you didn't loose all of your digits! 🔪 Try again.",
     };
 
     cx.render(rsx! {

@@ -19,7 +19,7 @@ asset_dir = "public"
 # HTML title tag content
 
 title = "👐 'n 🦶"
-base_path = "finger-and-toes"
+base_path = "fingers-and-toes"
 
 [web.watcher]
 

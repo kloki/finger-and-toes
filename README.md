@@ -1,2 +1,3 @@
-# finger-and-toes
+# fingers-and-toes
+
 A fun game to lose some money on.
