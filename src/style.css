@@ -72,3 +72,34 @@ button.filled-1:disabled {
   background-color: #8ca9dc;
   color: #faf6dc;
 }
+
+@media only screen and (max-width: 500px) {
+  header {
+    font-size: 7vw;
+  }
+
+  div.score {
+    font-size: 100%;
+  }
+  button.randombutton {
+    width: 100vw;
+    height: 20vw;
+    font-size: 12vw;
+  }
+  div.top {
+    width: 100vw;
+    display: block;
+  }
+  div.tiles {
+    width: 100vw;
+    height: 100vw;
+  }
+  button.tile {
+    width: 25vw;
+    height: 20vw;
+    font-size: 6vw;
+  }
+  div.explanation {
+    font-size: 100%;
+  }
+}
