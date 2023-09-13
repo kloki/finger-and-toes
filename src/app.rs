@@ -20,31 +20,31 @@ pub fn App(cx: Scope) -> Element {
     let board = use_ref(cx, || [0; SIZE]);
     let game_state = use_ref(cx, || GameState::Progress);
     let tiles = (0..SIZE).map(|i| {
-        rsx!(Tile {
-            board: board,
-            current_number: current_number,
-            game_state: game_state,
-            index: i
-        })
+        rsx!(Tile { board: board, current_number: current_number, game_state: game_state, index: i })
     });
     cx.render(rsx! {
         div {
-            style { include_str!("../src/style.css")}
-            header{ "👐 Fingers and Toes 🦶"}
-            Score{board:board, game_state:game_state}
-            div{
-                class:"top",
-                RandomButton{
-                    current_number:current_number,
-                    game_state:game_state,
-                    onclick_reset: move |_| {game_state.set(GameState::Progress); board.set([0;SIZE])},
-                },
-                div{class:"tiles", tiles}
+            style { include_str!("../src/style.css") }
+            header { "👐 Fingers and Toes 🦶" }
+            Score { board: board, game_state: game_state }
+            div { class: "top",
+                RandomButton {
+                    current_number: current_number,
+                    game_state: game_state,
+                    onclick_reset: move |_| {
+                        game_state.set(GameState::Progress);
+                        board.set([0; SIZE])
+                    }
+                }
+                div { class: "tiles", tiles }
             }
-            div{class:"explanation", "You're goal is to fill to whole board with numbers. Press the spin button for a random number."}
-            div{class:"explanation", "You'll have to put the numbers in numerical order. So choose wisely!"}
-            div{class:"explanation", "Play alone or with friends."}
-
+            div { class: "explanation",
+                "You're goal is to fill to whole board with numbers. Press the spin button for a random number."
+            }
+            div { class: "explanation",
+                "You'll have to put the numbers in numerical order. So choose wisely!"
+            }
+            div { class: "explanation", "Play alone or with friends." }
         }
     })
 }
@@ -70,7 +70,7 @@ fn Score<'a>(
         (GameState::Lost, _) => "You lost! Atleast you didn't loose ALL of your digits! Try again.",
     };
 
-    cx.render(rsx! { div{ class:"score", "{output}"}})
+    cx.render(rsx! { div { class: "score", "{output}" } })
 }
 
 #[inline_props]
@@ -82,26 +82,18 @@ fn RandomButton<'a>(
 ) -> Element {
     let mut rng = thread_rng();
     match (*game_state.read(), *current_number.read()) {
-        (GameState::Won, _) => cx.render(rsx! {
-        button{
-            class:"randombutton",
-            onclick: move |event| onclick_reset.call(event),
-            " 👑 "}}),
-        (GameState::Lost, _) => cx.render(rsx! {
-        button{
-            class:"randombutton",
-            onclick: move |event| onclick_reset.call(event),
-            " 🙊 "}}),
-        (GameState::Progress, n) if n != 0 => cx.render(rsx! {
-        button{
-            class:"randombutton",
-            disabled:true,"
-            {current_number.read()}"}}),
+        (GameState::Won, _) => cx.render(rsx! {button { class: "randombutton", onclick: move |event| onclick_reset.call(event), " 👑 " }}),
+        (GameState::Lost, _) => cx.render(rsx! {button { class: "randombutton", onclick: move |event| onclick_reset.call(event), " 🙊 " }}),
+        (GameState::Progress, n) if n != 0 => cx.render(rsx! {button { class: "randombutton", disabled: true, "
+            {current_number.read()}" }
+        }),
         _ => cx.render(rsx! {
-        button{
-            class:"randombutton",
-            onclick: move |_| current_number.set(rng.gen_range(1..=1000)),
-            "Spin!"}}),
+            button {
+                class: "randombutton",
+                onclick: move |_| current_number.set(rng.gen_range(1..=1000)),
+                "Spin!"
+            }
+        }),
     }
 }
 
@@ -135,19 +127,22 @@ fn Tile<'a>(
     index: usize,
 ) -> Element {
     match (board.read()[*index], *current_number.read()) {
-        (0, 0) => cx.render(rsx! {button{class:"tile",disabled:true,"{*index+1}"} }),
+        (0, 0) => cx.render(rsx! { button { class: "tile", disabled: true, "{*index+1}" } }),
         (0, _) => cx.render(rsx! {
-        button{
-            class:"tile",
-            onclick: move |_| {
-                board.write()[*index] = *current_number.read();
-                current_number.set(0);
-                if game_lost(*board.read(),*index){
-                    game_state.set(GameState::Lost);
-                } else if game_won(*board.read()){
-                    game_state.set(GameState::Won)
+            button {
+                class: "tile",
+                onclick: move |_| {
+                    board.write()[*index] = *current_number.read();
+                    current_number.set(0);
+                    if game_lost(*board.read(), *index) {
+                        game_state.set(GameState::Lost);
+                    } else if game_won(*board.read()) {
+                        game_state.set(GameState::Won)
+                    }
+                },
+                "{*index+1}"
             }
-        },"{*index+1}"} }),
-        (s, _) => cx.render(rsx! {button{class:"tile filled-1", disabled:true,"{s}"} }),
+        }),
+        (s, _) => cx.render(rsx! { button { class: "tile filled-1", disabled: true, "{s}" } }),
     }
 }
